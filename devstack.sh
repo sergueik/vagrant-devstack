@@ -13,17 +13,17 @@ export OPENSTACK_BRANCH=$OPENSTACK_BRANCH
 export OPENSTACK_ADM_PASSWORD=$OPENSTACK_ADM_PASSWORD
 
 # update system
-export DEBIAN_FRONTEND noninteractive
+export DEBIAN_FRONTEND=noninteractive
 sudo apt-get update
 sudo apt-get install -qqy git 
 
 # No module named angular_cookies
 
 # https://ask.openstack.org/en/question/64130/getting-error-while-installing-devstack-juno-release-stacksh/
-apt-get install npm
-npm install angular-cookies
+# apt-get install -qqy npm
+# npm install angular-cookies
 # the following may be an overkill
-apt-get install python-pbr
+# apt-get install python-pbr
 # TODO:  update base image
 # determine checkout folder
 
