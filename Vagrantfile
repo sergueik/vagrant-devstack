@@ -1,27 +1,22 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-DEVSTACK_IP = ENV["DEVSTACK_IP"] || "192.168.50.10"
+DEVSTACK_IP = ENV['DEVSTACK_IP'] || '192.168.50.10'
+basedir =  ENV.fetch('USERPROFILE', '')  
+basedir  = ENV.fetch('HOME', '') if basedir == ''
+basedir = basedir.gsub('\\', '/')
 
-Vagrant.configure("2") do |config|
+Vagrant.configure('2') do |config|
 
-  # use official ubuntu 12.04 LTS image
-  config.vm.box = "precise"
-  config.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/precise/current/precise-server-cloudimg-amd64-vagrant-disk1.box"
+  config.vm.box = 'trusty'
+  config.vm.box_url = "file://#{basedir}/Downloads/trusty-server-cloudimg-amd64-vagrant-disk1.box"
+  # cached ubuntu 12.04 LTS image 'http://cloud-images.ubuntu.com/vagrant/precise/current/precise-server-cloudimg-amd64-vagrant-disk1.box'
 
-  config.vm.hostname = "devstack"
-
-  # configuration for vmware fusion provider
-  config.vm.provider "vmware_fusion" do |v, override|
-    override.vm.box = "precise_fusion"
-    override.vm.box_url="http://files.vagrantup.com/precise64_vmware_fusion.box"
-    v.vmx["memsize"] = "2048"
-    v.vmx["numvcpus"] = "2"
-  end
+  config.vm.hostname = 'devstack'
 
   # devstack needs more than 1024 MB memory
-  config.vm.provider "virtualbox" do |p|
-    p.customize ["modifyvm", :id, "--memory", "2048"]
+  config.vm.provider 'virtualbox' do |p|
+    p.customize ['modifyvm', :id, '--memory', '2048']
   end
 
   # forward open stack ui
@@ -34,6 +29,12 @@ Vagrant.configure("2") do |config|
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
 
   # install devstack
-  config.vm.provision :shell, :path => "vagrant.sh"
+  config.vm.provision :shell, :inline => <<EOF
+export OS_USER=vagrant
+export OS_HOST_IP=#{DEVSTACK_IP}
+# run script
+sh /vagrant/devstack.sh
+
+EOF
 
 end

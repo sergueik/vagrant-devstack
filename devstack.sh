@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # environment variables
-OPENSTACK_BRANCH=stable/havana
+OPENSTACK_BRANCH=stable/juno
 OPENSTACK_ADM_PASSWORD=devstack
 
 # determine own script path
@@ -14,14 +14,22 @@ export OPENSTACK_ADM_PASSWORD=$OPENSTACK_ADM_PASSWORD
 
 # update system
 export DEBIAN_FRONTEND noninteractive
-sudo apt-get update || sudo yum update -y
-sudo apt-get install -qqy git || sudo yum install -y git
+sudo apt-get update
+sudo apt-get install -qqy git 
 
+# No module named angular_cookies
+
+# https://ask.openstack.org/en/question/64130/getting-error-while-installing-devstack-juno-release-stacksh/
+apt-get install npm
+npm install angular-cookies
+# the following may be an overkill
+apt-get install python-pbr
+# TODO:  update base image
 # determine checkout folder
 
 PWD=$(su $OS_USER -c "cd && pwd")
 DEVSTACK=$PWD/devstack
-
+# TODO: clone the devstack on the host box
 # check if devstack is already there
 if [ ! -d "$DEVSTACK" ]
 then
@@ -41,3 +49,5 @@ fi
 # start devstack
 echo "Start Devstack"
 su $OS_USER -c "cd $DEVSTACK && ./stack.sh"
+
+# see also https://github.com/grimmtheory/vagrant-devstack/blob/master/Vagrantfile.stable
